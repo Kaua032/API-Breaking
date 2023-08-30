@@ -1,8 +1,12 @@
 const express = require('express');
 const userRoute = require('./src/routes/user.route');
+const PORT = 2000;
 
 const app = express();
 
-app.use('', userRoute);
+app.use(express.json())
+app.use('/user', userRoute);
 
-app.listen(2000)
+app.listen(PORT, () => {
+    console.log(`Server On 🟢 ${PORT}`)
+})
