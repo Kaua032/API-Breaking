@@ -7,6 +7,7 @@ const app = express();
 
 connectDatabase();
 app.use(express.json())
+
 app.use('/user', userRoute);
 
 app.listen(PORT, () => {
