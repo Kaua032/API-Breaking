@@ -1,15 +1,10 @@
 import express from 'express';
 import connectDatabase from './src/database/db.js';
-import dotenv from 'dotenv';
 
 import userRoute from './src/routes/user.route.js';
 import authRoute from './src/routes/auth.route.js';
 
-dotenv.config();
-
-
-
-const PORT = process.env.PORT || 2000;
+const PORT = 3500;
 const app = express();
 
 connectDatabase();
