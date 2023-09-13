@@ -4,6 +4,7 @@ import {
   countNews,
   topNewsService,
   findByIdService,
+  searchByTitleService,
 } from "../services/news.service.js";
 
 const create = async (req, res) => {
@@ -135,4 +136,34 @@ const findById = async (req, res) => {
   }
 };
 
-export { create, findAll, topNews, findById };
+const searchByTitle = async (req, res) => {
+  try {
+    const { title } = req.query;
+
+    const news = await searchByTitleService(title);
+
+    if (news.length === 0) {
+      return res
+        .status(400)
+        .send({ message: "There are no posts with this title" });
+    }
+
+    return res.send({
+      results: news.map((newsItem) => ({
+        id: newsItem._id,
+        title: newsItem.title,
+        text: newsItem.text,
+        banner: newsItem.banner,
+        likes: newsItem.likes,
+        comments: newsItem.comments,
+        name: newsItem.user.name,
+        userName: newsItem.user.username,
+        userAvatar: newsItem.user.avatar,
+      })),
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+export { create, findAll, topNews, findById, searchByTitle };
