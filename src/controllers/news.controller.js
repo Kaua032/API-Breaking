@@ -197,6 +197,9 @@ const update = async (req, res) => {
     const { id } = req.params;
 
     const news = await findByIdService(id);
+    console.log(news.user._id);
+    console.log(req.userId);
+    console.log(news.user._id !== req.userId)
 
     if(news.user._id !== req.userId){
       return res.status(500).send({ message: "You didn't create this post"})
