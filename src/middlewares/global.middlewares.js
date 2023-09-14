@@ -25,3 +25,15 @@ export const validUser = async (req, res, next) =>{
 
     next();
 };
+
+export const ifExistsInfoNews = (req, res, next) => {
+    const { title, text, banner } = req.body;
+
+    if (!title && !text && !banner) {
+        return res
+          .status(400)
+          .send({ message: "Submit at least noe field to update the post" });
+      }
+
+    next()
+}
