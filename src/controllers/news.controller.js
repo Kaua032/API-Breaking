@@ -10,6 +10,8 @@ import {
   eraseService,
   likeNewsService,
   deleteLikeNewsService,
+  addCommentService,
+  deleteCommentService,
 } from "../services/news.service.js";
 
 const create = async (req, res) => {
@@ -238,13 +240,63 @@ const likeNews = async (req, res) => {
 
     const newsLiked = await likeNewsService(id, userId);
 
-    if(!newsLiked){
+    if (!newsLiked) {
       await deleteLikeNewsService(id, userId);
-      return res.status(200).send({ message: "Like successfully removed"})
+      return res.status(200).send({ message: "Like successfully removed" });
     }
 
-    res.send({ message: "Like done successfully"})
+    res.send({ message: "Like done successfully" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
 
+const addComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const { comment } = req.body;
+
+    if (!comment) {
+      return res.status(400).send({ message: "Write a message to comment" });
+    }
+
+    await addCommentService(id, comment, userId);
+
+    res.send({ message: "Comment successfully completed!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const { idNews, idComment } = req.params;
+    const userId = req.userId;
+
+    const commentDeleted = await deleteCommentService(
+      idNews,
+      idComment,
+      userId
+    );
+
+    const commentFinder = commentDeleted.comments.find(
+      (comment) => comment.idComment === idComment
+    );
+
+    if (!commentFinder) {
+      return res
+        .status(404)
+        .send({ message: "You can't delete this comment. " });
+    }
+
+    if (commentFinder.userId !== userId) {
+      return res
+        .status(400)
+        .send({ message: "You can't delete this comment. " });
+    }
+
+    res.send({ message: "Comment successfully removed!" });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -260,4 +312,6 @@ export {
   update,
   erase,
   likeNews,
+  addComment,
+  deleteComment,
 };
