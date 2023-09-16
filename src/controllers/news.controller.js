@@ -7,6 +7,7 @@ import {
   searchByTitleService,
   byUserService,
   updateService,
+  eraseService,
 } from "../services/news.service.js";
 
 const create = async (req, res) => {
@@ -197,19 +198,35 @@ const update = async (req, res) => {
     const { id } = req.params;
 
     const news = await findByIdService(id);
-    const idUserNews = `###${news.user._id}###`;
-    const idLogin = `###${req.userId}###`
 
-    if(idUserNews !== idLogin){
-      return res.status(500).send({ message: "You didn't create this post"});
+    if(`${news.user._id}` !== `${req.userId}`){
+      return res.status(500).send({ message: "You didn't create this news"});
     }
     
     await updateService(id, title, text, banner);
 
-    return res.send({ message: "Post successfully updated!" });
+    return res.send({ message: "News successfully updated!" });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 };
 
-export { create, findAll, topNews, findById, searchByTitle, byUser, update };
+const erase = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const news = await findByIdService(id);
+
+    if(`${news.user._id}` !== `${req.userId}`){
+      return res.status(500).send({ message: "You didn't create this news"});
+    }
+
+    await eraseService(id);
+
+    return res.send({ message: "News deleted successfully!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+export { create, findAll, topNews, findById, searchByTitle, byUser, update, erase };

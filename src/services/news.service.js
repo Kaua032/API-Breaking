@@ -28,6 +28,8 @@ const updateService = (id, title, text, banner) =>
     { rawResult: true }
   );
 
+const eraseService = (id) => News.findByIdAndDelete({ _id: id });
+
 export {
   createService,
   findAllService,
@@ -37,4 +39,5 @@ export {
   searchByTitleService,
   byUserService,
   updateService,
+  eraseService,
 };
