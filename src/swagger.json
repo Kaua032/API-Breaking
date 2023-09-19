@@ -256,7 +256,7 @@
           }
         }
       },
-      "/news": {
+      "/news/": {
         "get": {
           "summary": "Search all news",
           "description": "Route responsible for fetching all news",
