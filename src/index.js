@@ -4,7 +4,7 @@ import connectDatabase from "./database/db.js";
 import userRoute from "./routes/user.route.js";
 import authRoute from "./routes/auth.route.js";
 import newsRoute from "./routes/news.route.js";
-import swaggerRoute from "./routes/swagger.route.js";
+import swaggerRoute from "./routes/swagger.route.cjs";
 
 const PORT = 3500;
 const app = express();
