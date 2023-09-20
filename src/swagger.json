@@ -212,7 +212,7 @@
           }
         }
       },
-      "/news": {
+      "/news/": {
         "post": {
           "summary": "Create a new news",
           "description": "Route responsible for creating a new News",
@@ -260,7 +260,7 @@
           }
         }
       },
-      "/news/": {
+      "/news/all": {
         "get": {
           "summary": "Search all news",
           "description": "Route responsible for fetching all news",

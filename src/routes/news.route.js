@@ -18,7 +18,7 @@ import { Router } from "express";
 const router = Router();
 
 router.post("/", authMiddleware, ifExistsInfoNews, create);
-router.get("/", findAll);
+router.get("/all", findAll);
 router.get("/top", topNews);
 router.get("/search", searchByTitle);
 router.get("/byUser", authMiddleware, byUser);
