@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+
 import connectDatabase from "./database/db.js";
 
 import userRoute from "./routes/user.route.js";
@@ -9,12 +11,15 @@ import swaggerRoute from "./routes/swagger.route.cjs";
 const PORT = 3500;
 const app = express();
 
+app.use(cors());
+
 connectDatabase();
 app.use(express.json());
 app.use("/user", userRoute);
 app.use("/auth", authRoute);
 app.use("/news", newsRoute);
 app.use("/doc", swaggerRoute );
+
 
 app.listen(PORT, () => {
   console.log(`Server On 🟢 ${PORT}`);
