@@ -76,7 +76,8 @@ const findAll = async (req, res) => {
       limit,
       offset,
       total,
-      results: news.map((newsItem) => ({
+      results: news.map((newsItem) => (
+        {
         id: newsItem._id,
         title: newsItem.title,
         text: newsItem.text,
@@ -89,7 +90,7 @@ const findAll = async (req, res) => {
       })),
     });
   } catch (err) {
-    res.status(500).send({ message: err.message });
+    res.status(500).send({ message: err.message, message2: "asdfas" });
   }
 };
 
