@@ -20,7 +20,7 @@ export const validUser = async (req, res, next) =>{
         return res.status(400).send({ message: "User not found"});
     }
 
-    req.id = id;
+    req.userId = id;
     req.user = user;
 
     next();
