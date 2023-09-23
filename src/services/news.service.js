@@ -29,10 +29,7 @@ const createService = async (body, userId) => {
     return news
 };
 
-const findAllService = async (req, res) => {
-  try {
-    let { limit, offset } = req.query;
-
+const findAllService = async (offset, limit) => {
     limit = Number(limit);
     offset = Number(offset);
 
@@ -46,7 +43,6 @@ const findAllService = async (req, res) => {
 
     const news = await findAllRepository(offset, limit);
     const total = await countNewsRepository();
-    const currentUrl = req.baseUrl;
 
     const next = offset + limit;
     const nextUrl =
@@ -58,11 +54,9 @@ const findAllService = async (req, res) => {
         ? `${currentUrl}?limit=${limit}&offset=${previous}`
         : null;
 
-    if (news.length === 0) {
-      return res.status(400).send({ message: "There are no registered news" });
-    }
+    news.shift();
 
-    res.send({
+    return {
       nextUrl,
       previousUrl,
       limit,
@@ -80,10 +74,9 @@ const findAllService = async (req, res) => {
         userName: newsItem.user.username,
         userAvatar: newsItem.user.avatar,
       })),
-    });
-  } catch (err) {
-    res.status(500).send({ message: err.message, message2: "asdfas" });
-  }
+    };
+
+
 };
 
 const topNewsService = async (req, res) => {
