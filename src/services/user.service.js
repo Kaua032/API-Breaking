@@ -1,5 +1,5 @@
+import { generateTokenRepository } from "../repositories/auth.repositories.js";
 import userRepositories from "../repositories/user.repositories.js";
-import { generateToken } from "./auth.service.js";
 import bcrypt from "bcrypt";
 
 const createService = async (body) => {
@@ -17,7 +17,7 @@ const createService = async (body) => {
 
   if (!user) throw new Error("Error creating User");
 
-  const token = generateToken(user.id);
+  const token = generateTokenRepository(user.id);
 
   return {
     message: "User created sucessfully",
