@@ -29,7 +29,7 @@ const createService = async (body, userId) => {
     return news
 };
 
-const findAllService = async (offset, limit) => {
+const findAllService = async (limit, offset, currentUrl) => {
     limit = Number(limit);
     offset = Number(offset);
 
@@ -54,7 +54,6 @@ const findAllService = async (offset, limit) => {
         ? `${currentUrl}?limit=${limit}&offset=${previous}`
         : null;
 
-    news.shift();
 
     return {
       nextUrl,
@@ -79,15 +78,12 @@ const findAllService = async (offset, limit) => {
 
 };
 
-const topNewsService = async (req, res) => {
-  try {
-    const news = await topNewsRepository();
+const topNewsService = async () => {
+  const news = await topNewsRepository();
 
-    if (!news) {
-      return res.status(400).send({ message: "There is no registred post" });
-    }
+    if (!news) throw new Error("There is no registred post");
 
-    res.send({
+    return {
       news: {
         id: news._id,
         title: news.title,
@@ -99,19 +95,13 @@ const topNewsService = async (req, res) => {
         userName: news.user.username,
         userAvatar: news.user.avatar,
       },
-    });
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
+    };
 };
 
-const findByIdService = async (req, res) => {
-  try {
-    const { id } = req.params;
-
+const findByIdService = async (id) => {
     const news = await findByIdRepository(id);
 
-    return res.send({
+    return {
       news: {
         id: news._id,
         title: news.title,
@@ -123,26 +113,16 @@ const findByIdService = async (req, res) => {
         userName: news.user.username,
         userAvatar: news.user.avatar,
       },
-    });
-  } catch (err) {
-    res.status(500).send({ message: err.message });
-  }
+    };
 };
 
-const searchByTitleService = async (req, res) => {
-  try {
-    const { title } = req.query;
+const searchByTitleService = async (title) => {
+    const foundNews = await searchByTitleRepository(title);
 
-    const news = await searchByTitleRepository(title);
+    if (foundNews.length === 0) throw new Error( "There are no posts with this title");
 
-    if (news.length === 0) {
-      return res
-        .status(400)
-        .send({ message: "There are no posts with this title" });
-    }
-
-    return res.send({
-      results: news.map((newsItem) => ({
+    return {
+      foundNews: foundNews.map((newsItem) => ({
         id: newsItem._id,
         title: newsItem.title,
         text: newsItem.text,
@@ -153,18 +133,13 @@ const searchByTitleService = async (req, res) => {
         userName: newsItem.user.username,
         userAvatar: newsItem.user.avatar,
       })),
-    });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
+    };
 };
 
-const byUserService = async (req, res) => {
-  try {
-    const id = req.userId;
+const byUserService = async (id) => {
     const news = await byUserRepository(id);
 
-    return res.send({
+    return {
       results: news.map((newsItem) => ({
         id: newsItem._id,
         title: newsItem.title,
@@ -176,116 +151,64 @@ const byUserService = async (req, res) => {
         userName: newsItem.user.username,
         userAvatar: newsItem.user.avatar,
       })),
-    });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
+    };
 };
 
-const updateService = async (req, res) => {
-  try {
-    const { title, text, banner } = req.body;
-    const { id } = req.params;
+const updateService = async (id, title, banner, text, userId) => {
+    if(!title && !banner && !text) throw new Error("Submit at least one field to update the news");
 
     const news = await findByIdRepository(id);
 
-    if (`${news.user._id}` !== `${req.userId}`) {
-      return res.status(500).send({ message: "You didn't create this news" });
-    }
+    if (!news) throw new Error("News not found");
+
+    if (`${news.user._id}` !== `${userId}`) throw new Error("You didn't create this news");
 
     await updateRepository(id, title, text, banner);
-
-    return res.send({ message: "News successfully updated!" });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
 };
 
-const eraseService = async (req, res) => {
-  try {
-    const { id } = req.params;
-
+const eraseService = async (id, userId) => {
     const news = await findByIdRepository(id);
 
-    if (`${news.user._id}` !== `${req.userId}`) {
-      return res.status(500).send({ message: "You didn't create this news" });
-    }
+    if(!news) throw new Error("News not found")
+
+    if (`${news.user._id}` !== `${userId}`) throw new Error("You didn't create this news");
 
     await eraseRepository(id);
-
-    return res.send({ message: "News deleted successfully!" });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
 };
 
-const likeNewsService = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.userId;
-
+const likeNewsService = async (id, userId) => {
     const newsLiked = await likeNewsRepository(id, userId);
+    console.log(newsLiked);
 
     if (!newsLiked) {
       await deleteLikeNewsRepository(id, userId);
-      return res.status(200).send({ message: "Like successfully removed" });
+      return { message: "Like successfully removed" };
     }
 
-    res.send({ message: "Like done successfully" });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
+    return { message: "Like done successfully" };
 };
 
-const addCommentService = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.userId;
-    const { comment } = req.body;
+const addCommentService = async (newsId, comment, userId) => {
 
-    if (!comment) {
-      return res.status(400).send({ message: "Write a message to comment" });
-    }
+    if (!comment) throw new Error("Write a message to comment");
 
-    await addCommentRepository(id, comment, userId);
+    const news = await findByIdRepository(newsId)
 
-    res.send({ message: "Comment successfully completed!" });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
+    if (!news) throw new Error("News not found")
+
+    await addCommentRepository(newsId, comment, userId);
 };
 
-const deleteCommentService = async (req, res) => {
-  try {
-    const { idNews, idComment } = req.params;
-    const userId = req.userId;
+const deleteCommentService = async (idNews, idComment, userId) => {
+  const news = await findByIdRepository(idNews);
 
-    const commentDeleted = await deleteCommentRepository(
+  if(!news) throw new Error("News not found");
+
+  await deleteCommentRepository(
       idNews,
       idComment,
       userId
     );
-
-    const commentFinder = commentDeleted.comments.find(
-      (comment) => comment.idComment === idComment
-    );
-
-    if (!commentFinder) {
-      return res
-        .status(404)
-        .send({ message: "You can't delete this comment. " });
-    }
-
-    if (commentFinder.userId !== userId) {
-      return res
-        .status(400)
-        .send({ message: "You can't delete this comment. " });
-    }
-
-    res.send({ message: "Comment successfully removed!" });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
 };
 
 export {
