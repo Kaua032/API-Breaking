@@ -1,20 +1,20 @@
 import User from "../models/User.js";
 
-const findByEmailUserRepository = (email) => User.findOne({email: email});
+export const userFindByEmailUserRepository = (email) => User.findOne({email: email});
 
-const createRepository = (body) => User.create(body);
+export const userCreateRepository = (body) => User.create(body);
 
-const findAllRepository = () => User.find();
+export const userFindAllRepository = () => User.find();
 
-const findByIdRepository = (id) => User.findById(id);
+export const userFindByIdRepository = (id) => User.findOne({_id: id});
 
-const updateRepository = (id, body) =>
+export const userUpdateRepository = (id, body) =>
   User.findOneAndUpdate({ _id: id }, { name: body.name, username: body.username, email: body.email, password: body.password, avatar: body.avatar, background: body.background });
 
 export default {
-  findByEmailUserRepository,
-  createRepository,
-  findAllRepository,
-  findByIdRepository,
-  updateRepository,
+  userFindByEmailUserRepository,
+  userCreateRepository,
+  userFindAllRepository,
+  userFindByIdRepository,
+  userUpdateRepository,
 };

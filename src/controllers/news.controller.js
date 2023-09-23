@@ -1,7 +1,6 @@
 import {
   createService,
   findAllService,
-  countNews,
   topNewsService,
   findByIdService,
   searchByTitleService,
@@ -9,29 +8,18 @@ import {
   updateService,
   eraseService,
   likeNewsService,
-  deleteLikeNewsService,
   addCommentService,
   deleteCommentService,
 } from "../services/news.service.js";
 
 const create = async (req, res) => {
+  const body = req.body;
+  const userId = req.userId;
+
   try {
-    const { title, text, banner } = req.body;
+    const newNews = await createService(body, userId);
 
-    if (!title || !text || !banner) {
-      return res
-        .status(400)
-        .send({ message: "Submit all fields for registration" });
-    }
-
-    await createService({
-      title,
-      text,
-      banner,
-      user: req.userId,
-    });
-
-    res.send(201);
+    res.status(201).send(newNews);
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
@@ -76,8 +64,7 @@ const findAll = async (req, res) => {
       limit,
       offset,
       total,
-      results: news.map((newsItem) => (
-        {
+      results: news.map((newsItem) => ({
         id: newsItem._id,
         title: newsItem.title,
         text: newsItem.text,
