@@ -54,6 +54,7 @@ const findAllService = async (limit, offset, currentUrl) => {
         ? `${currentUrl}?limit=${limit}&offset=${previous}`
         : null;
 
+    news.shift();
 
     return {
       nextUrl,
