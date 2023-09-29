@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 
 const createService = async (body) => {
   const { name, username, email, password, avatar, background } = body;
-  console.log(email);
 
   if (!name || !username || !email || !password || !avatar || !background)
     throw new Error("Submit all fields for registration");
