@@ -18,18 +18,8 @@ const createService = async (body) => {
 
   const token = generateTokenRepository(user.id);
 
-  return {
-    message: "User created sucessfully",
-    user: {
-      id: user._id,
-      name,
-      username,
-      email,
-      avatar,
-      background,
-    },
-    token,
-  };
+  return token;
+  
 };
 
 const findAllService = async () => {

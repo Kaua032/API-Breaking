@@ -4,9 +4,9 @@ const create = async (req, res) => {
   const body = req.body;
 
   try {
-    const user = await userService.createService(body);
+    const token = await userService.createService(body);
 
-    return res.status(201).send(user); 
+    return res.status(201).send({token}); 
   } catch (error) {
     return res.status(500).send({message: error.message})
   }
