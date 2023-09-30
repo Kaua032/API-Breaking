@@ -7,7 +7,7 @@ const userRouter = Router();
 
 userRouter.post('/', userController.create);
 userRouter.get('/', userController.findAll);
-userRouter.get('/:id?', validId, validUser, authMiddleware, userController.findById);
+userRouter.get('findById/:id?', validId, validUser, authMiddleware, userController.findById);
 userRouter.patch('/:id', validId, validUser, authMiddleware, userController.update);
 
 
