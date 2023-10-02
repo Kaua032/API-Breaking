@@ -6,9 +6,9 @@ const create = async (req, res) => {
   try {
     const token = await userService.createService(body);
 
-    return res.status(201).send({token}); 
+    return res.status(201).send({ token });
   } catch (error) {
-    return res.status(500).send({message: error.message})
+    return res.status(500).send({ message: error.message });
   }
 };
 
@@ -16,19 +16,15 @@ const findAll = async (req, res) => {
   try {
     const users = await userService.findAllService();
 
-    return res.send(users);    
+    return res.send(users);
   } catch (err) {
     res.status(500).send({ message: err.message });
   }
 };
 
 const findById = async (req, res) => {
-  const { id: userId } = req.params;
-  const userIdLogged = req.userID
-
   try {
-    const user = await userService.findByIdService(userId, userIdLogged)
-
+    const user = await userService.findByIdService(req.params.id, res.userId);
 
     return res.send(user);
   } catch (err) {

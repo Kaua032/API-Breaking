@@ -9,9 +9,8 @@ userRouter.post('/', userController.create);
 userRouter.use(authMiddleware)
 userRouter.get('/', userController.findAll);
 
-userRouter.use(validId)
-userRouter.get('findById/:id?', userController.findById);
-userRouter.patch('/:id', userController.update);
+userRouter.get('/findById/:id?', validId, userController.findById);
+userRouter.patch('/:id', validId, userController.update);
 
 
 export default userRouter;

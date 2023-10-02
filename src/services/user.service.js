@@ -38,7 +38,6 @@ const findByIdService = async (userId, userIdLogged) => {
   } else {
     idParam = userId;
   }
-
   if (!idParam)
     throw new Error("Send an id in the parameters to search for the user");
 
